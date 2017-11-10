@@ -4,9 +4,7 @@ import (
 	"net/http"
 	"time"
 	"encoding/json"
-	_"github.com/jinzhu/gorm"
 
-	_"github.com/jinzhu/gorm"
 )
 
 func fetch_product_categories(w http.ResponseWriter, req *http.Request)  {
