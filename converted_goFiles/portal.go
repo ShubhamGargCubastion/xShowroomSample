@@ -16,13 +16,22 @@ var err error
 
 func main(){
 
-	db,err=gorm.Open("mysql","root:password@/x_showroom?charset=utf8&parseTime=True&loc=Local")
-	//db,err:=gorm.Open("postgres","user=aman password=password dbname=test1 sslmode=disable")
+ connect()
+ defer db.Close()
+	router:=mux.NewRouter()
+	router.HandleFunc("/positions",fetch_position)
+	router.HandleFunc("/product_categories",fetch_product_categories)
 
-	if err!=nil{
+	router.HandleFunc("/users",fetch_users)
+	http.ListenAndServe(":8080",router)
+
+}
+func connect(){
+	db,err=gorm.Open("mysql","root:password@/x_showroom?charset=utf8&parseTime=True&loc=Local")
+
+	if err!=nil {
 		log.Fatal(err)
 	}
-	defer db.Close()
 
 	err = db.DB().Ping()
 	if err != nil {
@@ -33,13 +42,4 @@ func main(){
 
 	db.SingularTable(true)
 
-
-	router:=mux.NewRouter()
-	router.HandleFunc("/positions",fetch_position)
-	router.HandleFunc("/prodcat",fetch_product_categories)
-
-	router.HandleFunc("/users",fetch_users)
-	http.ListenAndServe(":8080",router)
-
 }
-

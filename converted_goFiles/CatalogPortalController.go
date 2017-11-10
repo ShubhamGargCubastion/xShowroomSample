@@ -10,8 +10,23 @@ import (
 	"encoding/json"
 )
 
+
+func fetch_product_categories(w http.ResponseWriter, req *http.Request)  {
+     db.SingularTable(true)
+	var catalogs []XCatalog
+	db.Debug().
+		Select("id,name").
+		Where("id IN (?) AND master_catalog_id IS NOT NULL",
+		db.Table("x_catalog_prod").
+			Select("DISTINCT catalog_id").Order("seq_num").QueryExpr()).Find(&catalogs)
+
+	json.NewEncoder(w).Encode(catalogs)
+
+}
+
+
 type XCatalog struct {
-	ID              uint           `json:"id,omitempty"`                // id
+	ID              uint           `json:"id,omitempty"`
 	Name            string         `json:"name,omitempty"`              // name
 	DisplayName     string         `json:"display_name,omitempty"`      // display_name
 	SeqNum          int            `json:"seq_num,omitempty"`           // seq_num
@@ -48,6 +63,8 @@ type XOrgExt struct {
 	UpdatedBy       uint           `json:"updated_by,omitempty"`        // updated_by
 	CreatedAt       *time.Time     `json:"created_at,omitempty"`        // created_at
 	UpdatedAt       *time.Time     `json:"updated_at,omitempty"`        // updated_at
+	UserOrgID		*XUser         `gorm:"ForeignKey:OrgID;AssociationForeignKey:OrgID" json:"omitempty"`
+	CatProdID		*XCatalogProd  `gorm:"ForeignKey:CatalogID;AssociationForeignKey:ID" json:"omitempty"`
 
 }
 
@@ -83,6 +100,5 @@ func fetch_product_categories(w http.ResponseWriter, req *http.Request){
 		Find(&catalog)
 
 		json.NewEncoder(w).Encode(catalog)
-
 
 }
