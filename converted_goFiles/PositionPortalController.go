@@ -59,11 +59,12 @@ func fetch_position(w http.ResponseWriter, req *http.Request){
 
 	var pos []XPostn
 	db.Debug().Preload("Pos").Preload("Creater", func(db *gorm.DB) *gorm.DB {
-		return db.Select("id, first_name,last_name")
+		return db.Select("id, first_name,last_name").Where("id=?",1)
 	}).Preload("Updater",func(db *gorm.DB) *gorm.DB {
 		return db.Select("id, first_name,last_name")
-	}).Find(&pos)
+	}).Where("id=?",2).Or("id=?",3).Find(&pos)
 
 		json.NewEncoder(w).Encode(pos)
 
 }
+
